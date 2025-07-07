@@ -9,48 +9,43 @@ import kotlinx.coroutines.flow.Flow
  * Camada entre a UI e a base de dados
  */
 class UserRepository(private val database: AppDatabase) {
-    
+
     private val userDao = database.userDao()
-    
+
     /**
      * Fazer login do utilizador
      */
     suspend fun loginUser(email: String, password: String): User? {
         return userDao.loginUser(email, password)
     }
-    
+
     /**
      * Registar novo utilizador
      */
     suspend fun registerUser(email: String, password: String, isAdmin: Boolean = false): Boolean {
         return try {
-            // Verificar se email já existe
             if (userDao.emailExists(email) > 0) {
                 false // Email já existe
             } else {
                 val user = User(email = email, password = password, isAdmin = isAdmin)
                 userDao.insertUser(user)
-                true // Sucesso
+                true
             }
         } catch (e: Exception) {
-            false // Erro
+            false
         }
     }
-    
+
     /**
      * Obter todos os utilizadores
      */
-    fun getAllUsers(): Flow<List<User>> {
-        return userDao.getAllUsers()
-    }
-    
+    fun getAllUsers(): Flow<List<User>> = userDao.getAllUsers()
+
     /**
      * Obter utilizador por ID
      */
-    suspend fun getUserById(id: Int): User? {
-        return userDao.getUserById(id)
-    }
-    
+    suspend fun getUserById(id: Int): User? = userDao.getUserById(id)
+
     /**
      * Atualizar senha do utilizador
      */
@@ -62,7 +57,7 @@ class UserRepository(private val database: AppDatabase) {
             false
         }
     }
-    
+
     /**
      * Eliminar utilizador
      */

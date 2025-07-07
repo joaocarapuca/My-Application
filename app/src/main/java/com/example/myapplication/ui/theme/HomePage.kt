@@ -20,12 +20,17 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.navigation.Routes
 import com.example.myapplication.ui.screens.HorarioScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.myapplication.viewmodel.AuthViewModel
 
 
 data class BottomNavItem(val label: String, val icon: ImageVector, val route: String)
 
 @Composable
-fun HomePage(navController: NavController) {
+fun HomePage(
+    navController: NavController,
+    authViewModel: AuthViewModel = viewModel()
+) {
     val bottomNavController = rememberNavController()
 
     val items = listOf(
@@ -85,6 +90,7 @@ fun HomePage(navController: NavController) {
                         nome = "Laura Remechido",
                         email = "26603@stu.ipbeja.pt",
                         onLogout = {
+                            authViewModel.logout()
                             navController.navigate(Routes.LOGIN) {
                                 popUpTo(Routes.HOME_SCREEN) { inclusive = true }
                             }

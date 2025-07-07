@@ -6,10 +6,8 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Date
 
-/**
- * Base de dados principal da aplicação
- */
 @Database(
     entities = [User::class, Message::class, Post::class, Like::class, Schedule::class, Alert::class],
     version = 1,
@@ -17,19 +15,18 @@ import kotlinx.coroutines.launch
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
-    
-    // DAOs
+
     abstract fun userDao(): UserDao
     abstract fun messageDao(): MessageDao
     abstract fun postDao(): PostDao
     abstract fun likeDao(): LikeDao
     abstract fun scheduleDao(): ScheduleDao
     abstract fun alertDao(): AlertDao
-    
+
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null
-        
+
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -37,17 +34,14 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "app_database"
                 )
-                .addCallback(DatabaseCallback())
-                .build()
+                    .addCallback(DatabaseCallback())
+                    .build()
                 INSTANCE = instance
                 instance
             }
         }
     }
-    
-    /**
-     * Callback para popular a base de dados com dados iniciais
-     */
+
     private class DatabaseCallback : RoomDatabase.Callback() {
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
@@ -57,34 +51,17 @@ abstract class AppDatabase : RoomDatabase() {
                 }
             }
         }
-        
-        /**
-         * Popular base de dados com dados iniciais
-         */
+
         private suspend fun populateDatabase(database: AppDatabase) {
             val userDao = database.userDao()
             val scheduleDao = database.scheduleDao()
-            
-            // Criar utilizador administrador
-            userDao.insertUser(
-                User(email = "admin", password = "1234", isAdmin = true)
-            )
-            
-            // Criar utilizadores de teste
-            userDao.insertUser(
-                User(email = "joao@ipbeja.pt", password = "1234", isAdmin = false)
-            )
-            userDao.insertUser(
-                User(email = "maria@ipbeja.pt", password = "1234", isAdmin = false)
-            )
-            userDao.insertUser(
-                User(email = "laura@ipbeja.pt", password = "1234", isAdmin = false)
-            )
-            userDao.insertUser(
-                User(email = "professor@ipbeja.pt", password = "1234", isAdmin = true)
-            )
-            
-            // Criar horários de exemplo
+
+            userDao.insertUser(User(email = "admin", password = "1234", isAdmin = true))
+            userDao.insertUser(User(email = "joao@ipbeja.pt", password = "1234", isAdmin = false))
+            userDao.insertUser(User(email = "maria@ipbeja.pt", password = "1234", isAdmin = false))
+            userDao.insertUser(User(email = "laura@ipbeja.pt", password = "1234", isAdmin = false))
+            userDao.insertUser(User(email = "professor@ipbeja.pt", password = "1234", isAdmin = true))
+
             scheduleDao.insertSchedule(
                 Schedule(timeSlot = "08:00-10:00", monday = "SI", tuesday = "Design", wednesday = "Matemática", thursday = "TW", friday = "SI")
             )
@@ -96,11 +73,4 @@ abstract class AppDatabase : RoomDatabase() {
             )
         }
     }
-}
-
-/**
- * Conversores para tipos de dados personalizados
- */
-class Converters {
-    // Adicionar conversores se necessário no futuro
 }

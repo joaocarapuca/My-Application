@@ -1,12 +1,10 @@
 package com.example.myapplication
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -69,8 +67,8 @@ fun InstagramTopBar() {
 // Item do post estilo Instagram
 @Composable
 fun InstagramPostItem(
-    post: PostWithAuthor, 
-    isLiked: Boolean, 
+    post: PostWithAuthor,
+    isLiked: Boolean,
     onLikeClick: () -> Unit,
     currentUserId: Int
 ) {
@@ -105,9 +103,9 @@ fun InstagramPostItem(
                         fontSize = 18.sp
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.width(12.dp))
-                
+
                 Column {
                     Text(
                         text = post.authorEmail.split("@")[0],
@@ -122,17 +120,17 @@ fun InstagramPostItem(
                     )
                 }
             }
-            
+
             // Imagem do post (tamanho fixo)
             AsyncImage(
                 model = post.imageUrl,
                 contentDescription = "Post image",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(300.dp), // Altura fixa para todas as imagens
+                    .height(300.dp),
                 contentScale = ContentScale.Crop
             )
-            
+
             // Botões de ação (like, comentar, partilhar)
             Row(
                 modifier = Modifier
@@ -152,9 +150,9 @@ fun InstagramPostItem(
                         modifier = Modifier.size(24.dp)
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.width(8.dp))
-                
+
                 // Contador de likes
                 Text(
                     text = "${post.likesCount} likes",
@@ -163,7 +161,7 @@ fun InstagramPostItem(
                     color = Color(0xFF1B5E20)
                 )
             }
-            
+
             // Legenda do post
             Column(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
@@ -174,13 +172,13 @@ fun InstagramPostItem(
                     color = Color(0xFF1B5E20)
                 )
             }
-            
+
             Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
 
-// Tela principal melhorada
+// Tela principal
 @Composable
 fun HomeScreen(
     postViewModel: PostViewModel = viewModel(),
@@ -189,8 +187,7 @@ fun HomeScreen(
     val posts by postViewModel.posts.collectAsState()
     val userLikes by postViewModel.userLikes.collectAsState()
     val currentUser by authViewModel.currentUser.collectAsState()
-    
-    // Carregar likes do utilizador quando o utilizador muda
+
     LaunchedEffect(currentUser) {
         currentUser?.let { user ->
             postViewModel.loadUserLikes(user.id)
@@ -200,12 +197,11 @@ fun HomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF8F9FA)) // Fundo mais suave
+            .background(Color(0xFFF8F9FA))
     ) {
         InstagramTopBar()
 
         if (posts.isEmpty()) {
-            // Estado vazio
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -213,10 +209,7 @@ fun HomeScreen(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        text = "📱",
-                        fontSize = 48.sp
-                    )
+                    Text(text = "📱", fontSize = 48.sp)
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = "Nenhum post ainda",
@@ -239,7 +232,7 @@ fun HomeScreen(
                 items(posts.size) { index ->
                     val post = posts[index]
                     val isLiked = userLikes.contains(post.id)
-                    
+
                     Box(modifier = Modifier.padding(horizontal = 16.dp)) {
                         InstagramPostItem(
                             post = post,
@@ -253,42 +246,6 @@ fun HomeScreen(
                         )
                     }
                 }
-            }
-        }
-    }
-}
-            )
-        }
-    }
-}
-
-// Tela principal
-@Composable
-fun HomeScreen() {
-    val postList = listOf(
-        Post("prof.joao", "Discussão sobre a teoria da relatividade 📚"),
-        Post("dr.ana", "Novo artigo publicado sobre IA 🤖"),
-        Post("maria.research", "Resultados interessantes do nosso estudo 🌱")
-    )
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFE8F5E9))
-    ) {
-        InstagramTopBar()
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(bottom = 16.dp)
-        ) {
-            items(postList) { post ->
-                AcademicPostItem(post)
             }
         }
     }

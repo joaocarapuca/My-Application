@@ -22,6 +22,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.myapplication.viewmodel.AlertViewModel
+import com.example.myapplication.database.AlertWithSender
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -46,14 +49,21 @@ data class ChatUser(
 )
 
 @Composable
-fun MensagensScreen(username: String, navController: NavController? = null) {
+fun MensagensScreen(
+    username: String, 
+    navController: NavController? = null,
+    alertViewModel: AlertViewModel = viewModel()
+) {
     val users = listOf(
         ChatUser("João Carapuça", R.drawable.ic_launcher_foreground),
         ChatUser("David Destapado", R.drawable.ic_launcher_foreground)
     )
 
     val grupos = listOf("SI", "TW", "Design")
-    val alertas = listOf("Backup realizado", "Servidor reiniciado", "Atualização disponível")
+    
+    // Observar alertas do ViewModel
+    val alerts by alertViewModel.alerts.collectAsState()
+    val unreadCount by alertViewModel.unreadCount.collectAsState()
 
     var tabIndex by remember { mutableStateOf(0) }
     var chatSelecionado by remember { mutableStateOf<ChatUser?>(null) }
@@ -168,22 +178,150 @@ fun MensagensScreen(username: String, navController: NavController? = null) {
                         }
 
                         2 -> {
-                            LazyColumn(Modifier.padding(12.dp)) {
-                                items(alertas) {
-                                    Text(
-                                        text = "🔔 $it",
-                                        color = Color.Red,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(8.dp)
-                                            .background(Color.White, RoundedCornerShape(12.dp))
-                                            .padding(16.dp),
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                }
-                            }
+                            AlertsTab(alerts, alertViewModel)
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AlertsTab(alerts: List<AlertWithSender>, alertViewModel: AlertViewModel) {
+    if (alerts.isEmpty()) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "🔔",
+                    fontSize = 48.sp
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Nenhum alerta",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.Gray
+                )
+                Text(
+                    text = "Os professores podem enviar alertas",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray
+                )
+            }
+        }
+    } else {
+        LazyColumn(
+            modifier = Modifier.padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(alerts.size) { index ->
+                val alert = alerts[index]
+                AlertItem(
+                    alert = alert,
+                    onMarkAsRead = { alertViewModel.markAsRead(alert.id) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun AlertItem(alert: AlertWithSender, onMarkAsRead: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { 
+                if (!alert.isRead) {
+                    onMarkAsRead()
+                }
+            },
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (alert.isRead) Color.White else Color(0xFFE3F2FD)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        if (!alert.isRead) {
+                            Box(
+                                modifier = Modifier
+                                    .size(8.dp)
+                                    .background(Color.Red, CircleShape)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                        Text(
+                            text = alert.title,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = COLOR_TEXT_PRIMARY
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.height(4.dp))
+                    
+                    Text(
+                        text = "De: ${alert.senderEmail.split("@")[0]}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = COLOR_TEXT_SECONDARY
+                    )
+                    
+                    alert.targetGroup?.let { group ->
+                        Text(
+                            text = "Grupo: $group",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = COLOR_TEXT_SECONDARY
+                        )
+                    }
+                }
+                
+                Text(
+                    text = SimpleDateFormat("dd/MM HH:mm", Locale.getDefault()).format(Date(alert.timestamp)),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            Text(
+                text = alert.message,
+                style = MaterialTheme.typography.bodyMedium,
+                color = COLOR_TEXT_PRIMARY
+            )
+            
+            if (alert.targetGroup != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Box(
+                    modifier = Modifier
+                        .background(
+                            COLOR_PRIMARY_LIGHT.copy(alpha = 0.2f),
+                            RoundedCornerShape(8.dp)
+                        )
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = "📚 ${alert.targetGroup}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = COLOR_PRIMARY,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             }
         }
@@ -242,13 +380,24 @@ fun GroupItem(grupo: String, onClick: (String) -> Unit) {
         backgroundColor = Color.White,
         shape = RoundedCornerShape(12.dp)
     ) {
-        Text(
-            text = grupo,
-            modifier = Modifier.padding(16.dp),
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Medium,
-            color = COLOR_TEXT_PRIMARY
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "📚",
+                fontSize = 24.sp,
+                modifier = Modifier.padding(end = 12.dp)
+            )
+            Text(
+                text = grupo,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium,
+                color = COLOR_TEXT_PRIMARY
+            )
+        }
     }
 }
 
