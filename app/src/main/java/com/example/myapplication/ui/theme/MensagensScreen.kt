@@ -11,12 +11,26 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -48,6 +62,7 @@ data class ChatUser(
     val avatar: Int
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MensagensScreen(
     username: String, 
@@ -118,15 +133,14 @@ fun MensagensScreen(
                         Icon(Icons.Default.AccountCircle, contentDescription = null, tint = Color.White)
                     }
                 },
-                backgroundColor = COLOR_PRIMARY
+                modifier = Modifier.background(COLOR_PRIMARY)
             )
         },
-        backgroundColor = COLOR_BACKGROUND
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
 
             if (chatSelecionado == null && grupoSelecionado == null) {
-                TabRow(selectedTabIndex = tabIndex, backgroundColor = Color.White) {
+                TabRow(selectedTabIndex = tabIndex, modifier = Modifier.background(Color.White)) {
                     listOf("Chats", "Grupos", "Alertas").forEachIndexed { index, title ->
                         Tab(
                             selected = tabIndex == index,
@@ -375,9 +389,9 @@ fun GroupItem(grupo: String, onClick: (String) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(6.dp)
-            .clickable { onClick(grupo) },
-        elevation = 4.dp,
-        backgroundColor = Color.White,
+            .clickable { onClick(grupo) }
+            .background(Color.White),
+        elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
         Row(
