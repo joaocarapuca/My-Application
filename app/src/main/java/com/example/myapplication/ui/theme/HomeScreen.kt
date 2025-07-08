@@ -28,6 +28,63 @@ import com.example.myapplication.viewmodel.AuthViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
+// Data class for posts
+data class Post(
+    val author: String,
+    val content: String
+)
+
+// Academic post item component
+@Composable
+fun AcademicPostItem(post: Post) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFF4CAF50)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = post.author.first().uppercase(),
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                
+                Spacer(modifier = Modifier.width(12.dp))
+                
+                Text(
+                    text = post.author,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1B5E20)
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            Text(
+                text = post.content,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFF1B5E20)
+            )
+        }
+    }
+}
+
 // Barra superior estilo Instagram
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
