@@ -15,7 +15,6 @@ import kotlinx.coroutines.launch
     version = 1,
     exportSchema = false
 )
-@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     
     // DAOs
@@ -96,11 +95,4 @@ abstract class AppDatabase : RoomDatabase() {
             )
         }
     }
-}
-
-/**
- * Conversores para tipos de dados personalizados
- */
-class Converters {
-    // Adicionar conversores se necessário no futuro
 }
