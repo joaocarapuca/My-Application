@@ -1,14 +1,32 @@
 package com.example.myapplication.database
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 
-@Entity(tableName = "users")
-data class User(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-    val email: String,
-    val password: String,
-    val isAdmin: Boolean = false,
-    val createdAt: Long = System.currentTimeMillis()
-)
+@Dao
+interface UserDao {
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertUser(user: User)
+
+    @Query("SELECT * FROM users WHERE email = :email AND password = :password LIMIT 1")
+    suspend fun loginUser(email: String, password: String): User?
+
+    @Query("SELECT COUNT(*) FROM users WHERE email = :email")
+    suspend fun emailExists(email: String): Int
+
+    @Query("SELECT * FROM users ORDER BY createdAt DESC")
+    fun getAllUsers(): Flow<List<User>>
+
+    @Query("SELECT * FROM users WHERE id = :id")
+    suspend fun getUserById(id: Int): User?
+
+    @Query("UPDATE users SET password = :newPassword WHERE id = :userId")
+    suspend fun updatePassword(userId: Int, newPassword: String)
+
+    @Delete
+    suspend fun deleteUser(user: User)
+
+    @Query("SELECT * FROM users WHERE isAdmin = 1")
+    fun getTeachers(): Flow<List<User>>
+}
