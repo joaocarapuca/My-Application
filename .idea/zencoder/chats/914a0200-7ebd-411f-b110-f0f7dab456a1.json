@@ -1,0 +1,723 @@
+{
+    "checksum": "f85a71feb8ab71694034edd03b98a33b0268ea70a92e2e211239a553a2f05549",
+    "data": {
+    "id": "914a0200-7ebd-411f-b110-f0f7dab456a1",
+    "createdAt": 1752004831831,
+    "updatedAt": 1752004850769,
+    "title": "Kotlin Redeclaration Issue Explanation",
+    "messages": [
+        {
+            "id": "be9c9f50-ce7a-4326-8626-61152e7fab9e",
+            "role": "user",
+            "content": [
+                {
+                    "type": "command",
+                    "commandName": "explain"
+                },
+                {
+                    "type": "codeSnippet",
+                    "text": "class Converters {\n\n    @TypeConverter\n    fun fromTimestamp(value: Long?): Date? {",
+                    "language": "kotlin"
+                },
+                {
+                    "type": "text",
+                    "text": "Redeclaration:\nclass Converters : Any"
+                }
+            ],
+            "context": {
+                "currentFile": {
+                    "path": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\Converters.kt",
+                    "fsPath": "C:/Users/joaoc/AndroidStudioProjects/MyApplication2/app/src/main/java/com/example/myapplication/database/Converters.kt",
+                    "content": "package com.example.myapplication.database\n\nimport androidx.room.TypeConverter\nimport java.util.Date\n\nclass Converters {\n\n    @TypeConverter\n    fun fromTimestamp(value: Long?): Date? {\n        return value?.let { Date(it) }\n    }\n\n    @TypeConverter\n    fun dateToTimestamp(date: Date?): Long? {\n        return date?.time\n    }\n}\n",
+                    "language": "kotlin"
+                },
+                "codebaseEnabled": true,
+                "ragFiles": [
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/database/Converters.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\Converters.kt",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/database/AppDatabase.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\AppDatabase.kt",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/ui/theme/MensagensScreen.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\ui\\theme\\MensagensScreen.kt",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/ui/theme/HomeScreen.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\ui\\theme\\HomeScreen.kt",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/database/PostDao.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\PostDao.kt",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/database/Post.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\Post.kt",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/database/Like.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\Like.kt",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/database/AlertDao.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\AlertDao.kt",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/database/Alert.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\Alert.kt",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/database/Message.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\Message.kt",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/build.gradle.kts",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\build.gradle.kts",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "build.gradle.kts",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\build.gradle.kts",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/build/generated/source/kapt/debug/com/example/myapplication/database/AlertDao_Impl.java",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\build\\generated\\source\\kapt\\debug\\com\\example\\myapplication\\database\\AlertDao_Impl.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/build/generated/source/kapt/debug/com/example/myapplication/database/LikeDao_Impl.java",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\build\\generated\\source\\kapt\\debug\\com\\example\\myapplication\\database\\LikeDao_Impl.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/build/generated/source/kapt/debug/com/example/myapplication/database/MessageDao_Impl.java",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\build\\generated\\source\\kapt\\debug\\com\\example\\myapplication\\database\\MessageDao_Impl.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/build/generated/source/kapt/debug/com/example/myapplication/database/PostDao_Impl.java",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\build\\generated\\source\\kapt\\debug\\com\\example\\myapplication\\database\\PostDao_Impl.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/build/generated/source/kapt/debug/com/example/myapplication/database/ScheduleDao_Impl.java",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\build\\generated\\source\\kapt\\debug\\com\\example\\myapplication\\database\\ScheduleDao_Impl.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/build/generated/source/kapt/debug/com/example/myapplication/database/UserDao_Impl.java",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\build\\generated\\source\\kapt\\debug\\com\\example\\myapplication\\database\\UserDao_Impl.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app\\build.gradle.kts",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\build.gradle.kts",
+                        "sources": []
+                    },
+                    {
+                        "path": "app\\LoginPage.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\LoginPage.kt",
+                        "sources": []
+                    },
+                    {
+                        "path": "app\\src\\main\\java\\com\\example\\myapplication\\database\\AppDatabase.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\AppDatabase.kt",
+                        "sources": []
+                    },
+                    {
+                        "path": "app\\src\\main\\java\\com\\example\\myapplication\\ui\\theme\\MensagensScreen.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\ui\\theme\\MensagensScreen.kt",
+                        "sources": []
+                    },
+                    {
+                        "path": "build.gradle.kts",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\build.gradle.kts",
+                        "sources": []
+                    },
+                    {
+                        "path": "gradle\\libs.versions.toml",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\gradle\\libs.versions.toml",
+                        "sources": []
+                    },
+                    {
+                        "path": "app\\.gitignore",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\.gitignore",
+                        "sources": []
+                    },
+                    {
+                        "path": "gradle.properties",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\gradle.properties",
+                        "sources": []
+                    },
+                    {
+                        "path": ".gitignore",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\.gitignore",
+                        "sources": []
+                    },
+                    {
+                        "path": "gradle\\wrapper\\gradle-wrapper.properties",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\gradle\\wrapper\\gradle-wrapper.properties",
+                        "sources": []
+                    },
+                    {
+                        "path": "app\\src\\main\\java\\com\\example\\myapplication\\database\\User.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\User.kt",
+                        "sources": []
+                    },
+                    {
+                        "path": "app\\src\\main\\java\\com\\example\\myapplication\\AppDatabase.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\AppDatabase.kt",
+                        "sources": []
+                    },
+                    {
+                        "path": "app\\src\\main\\java\\com\\example\\myapplication\\MainActivity.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\MainActivity.kt",
+                        "sources": []
+                    },
+                    {
+                        "path": "app\\src\\main\\java\\com\\example\\myapplication\\SQLiteOpenHelper.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\SQLiteOpenHelper.kt",
+                        "sources": []
+                    },
+                    {
+                        "path": "app\\src\\main\\java\\com\\example\\myapplication\\database\\UserDao.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\UserDao.kt",
+                        "sources": []
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/routes/AppNavHost.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\routes\\AppNavHost.kt",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/ui/theme/Color.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\ui\\theme\\Color.kt",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/ui/theme/Horario.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\ui\\theme\\Horario.kt",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/ui/theme/HomePage.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\ui\\theme\\HomePage.kt",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/MainActivity.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\MainActivity.kt",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/ui/theme/MensagensScreen.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\ui\\theme\\MensagensScreen.kt",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/Pages/LoginPage.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\Pages\\LoginPage.kt",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/routes/Routes.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\routes\\Routes.kt",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/ui/theme/HomeScreen.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\ui\\theme\\HomeScreen.kt",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/database/AlertDao.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\AlertDao.kt",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "build.gradle.kts",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\build.gradle.kts",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "app/build.gradle.kts",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\build.gradle.kts",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/database/AppDatabase.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\AppDatabase.kt",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/database/Converters.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\Converters.kt",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    }
+                ],
+                "rerankedFiles": [],
+                "usedFilePaths": [
+                    {
+                        "path": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\Converters.kt",
+                        "fsPath": "C:/Users/joaoc/AndroidStudioProjects/MyApplication2/app/src/main/java/com/example/myapplication/database/Converters.kt",
+                        "content": "package com.example.myapplication.database\n\nimport androidx.room.TypeConverter\nimport java.util.Date\n\nclass Converters {\n\n    @TypeConverter\n    fun fromTimestamp(value: Long?): Date? {\n        return value?.let { Date(it) }\n    }\n\n    @TypeConverter\n    fun dateToTimestamp(date: Date?): Long? {\n        return date?.time\n    }\n}\n",
+                        "language": "kotlin"
+                    }
+                ]
+            },
+            "createdAt": 1752004831854,
+            "isInternal": false,
+            "rawContent": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "command",
+                                "attrs": {
+                                    "label": "explain"
+                                },
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "/explain"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "codeBlock",
+                                "attrs": {
+                                    "language": "kotlin"
+                                },
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "class Converters {\n\n    @TypeConverter\n    fun fromTimestamp(value: Long?): Date? {"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "text",
+                                "text": "Redeclaration:\nclass Converters : Any"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "id": "cd1da0a0-b496-47c2-9095-3821f720087f",
+            "role": "assistant",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "The terminal message you provided indicates a potential issue with the Kotlin code in your `Converters.kt` file. Let's break down the message and the relevant code:\n\n### Terminal Message Breakdown\n\n1. **Redeclaration: class Converters : Any**\n\n   - **Explanation**: This message suggests that there is a redeclaration of the `Converters` class. In Kotlin, every class implicitly extends `Any`, which is the root of the Kotlin class hierarchy. The message indicates that there might be another declaration of the `Converters` class somewhere in your project, leading to a conflict.\n\n   - **Potential Issues**: \n     - **Duplicate Class**: There might be another file or another part of your codebase where a class named `Converters` is declared. This can cause confusion for the compiler as it tries to resolve which class to use.\n     - **Namespace Conflict**: If there are multiple `Converters` classes in different packages, ensure that you are importing the correct one where needed.\n\n   - **Necessary Actions**:\n     - **Search for Duplicates**: Check your project for any other files or classes named `Converters`. Ensure that there is only one declaration of this class unless they are in different packages and you are managing imports correctly.\n     - **Refactor if Necessary**: If you find multiple classes with the same name, consider renaming them to avoid conflicts.\n\n### Code Explanation\n\nThe `Converters.kt` file contains a class `Converters` with two functions annotated with `@TypeConverter`. These functions are used in the context of Room, an Android persistence library, to convert between custom data types and types that Room can persist in a database.\n\n- **`fromTimestamp(value: Long?): Date?`**: This function converts a `Long` value (typically a timestamp) into a `Date` object. If the `value` is `null`, it returns `null`; otherwise, it creates a `Date` object using the timestamp.\n\n- **`dateToTimestamp(date: Date?): Long?`**: This function performs the reverse operation, converting a `Date` object into a `Long` timestamp. If the `date` is `null`, it returns `null`; otherwise, it returns the time in milliseconds since the epoch.\n\n### Context and System Behavior\n\n- **Type Converters in Room**: These functions are essential for Room to handle custom types that are not natively supported by SQLite. By providing these converters, you enable Room to store `Date` objects as `Long` timestamps in the database and retrieve them back as `Date` objects.\n\n- **Potential Issues**: If there are issues with the converters, such as incorrect conversions or null handling, it could lead to data inconsistencies or runtime errors when interacting with the database.\n\n- **Resolution**: Ensure that the converters are correctly implemented and tested. Also, resolve any redeclaration issues to prevent compilation errors.\n\nBy addressing the redeclaration issue and ensuring your converters are correctly implemented, you can maintain a smooth interaction between your Kotlin code and the Room database."
+                }
+            ],
+            "context": {
+                "currentFile": {
+                    "path": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\Converters.kt",
+                    "fsPath": "C:/Users/joaoc/AndroidStudioProjects/MyApplication2/app/src/main/java/com/example/myapplication/database/Converters.kt",
+                    "content": "package com.example.myapplication.database\n\nimport androidx.room.TypeConverter\nimport java.util.Date\n\nclass Converters {\n\n    @TypeConverter\n    fun fromTimestamp(value: Long?): Date? {\n        return value?.let { Date(it) }\n    }\n\n    @TypeConverter\n    fun dateToTimestamp(date: Date?): Long? {\n        return date?.time\n    }\n}\n",
+                    "language": "kotlin"
+                },
+                "codebaseEnabled": true,
+                "ragFiles": [
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/database/Converters.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\Converters.kt",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/database/AppDatabase.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\AppDatabase.kt",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/ui/theme/MensagensScreen.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\ui\\theme\\MensagensScreen.kt",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/ui/theme/HomeScreen.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\ui\\theme\\HomeScreen.kt",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/database/PostDao.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\PostDao.kt",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/database/Post.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\Post.kt",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/database/Like.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\Like.kt",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/database/AlertDao.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\AlertDao.kt",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/database/Alert.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\Alert.kt",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/database/Message.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\Message.kt",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/build.gradle.kts",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\build.gradle.kts",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "build.gradle.kts",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\build.gradle.kts",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/build/generated/source/kapt/debug/com/example/myapplication/database/AlertDao_Impl.java",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\build\\generated\\source\\kapt\\debug\\com\\example\\myapplication\\database\\AlertDao_Impl.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/build/generated/source/kapt/debug/com/example/myapplication/database/LikeDao_Impl.java",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\build\\generated\\source\\kapt\\debug\\com\\example\\myapplication\\database\\LikeDao_Impl.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/build/generated/source/kapt/debug/com/example/myapplication/database/MessageDao_Impl.java",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\build\\generated\\source\\kapt\\debug\\com\\example\\myapplication\\database\\MessageDao_Impl.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/build/generated/source/kapt/debug/com/example/myapplication/database/PostDao_Impl.java",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\build\\generated\\source\\kapt\\debug\\com\\example\\myapplication\\database\\PostDao_Impl.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/build/generated/source/kapt/debug/com/example/myapplication/database/ScheduleDao_Impl.java",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\build\\generated\\source\\kapt\\debug\\com\\example\\myapplication\\database\\ScheduleDao_Impl.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app/build/generated/source/kapt/debug/com/example/myapplication/database/UserDao_Impl.java",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\build\\generated\\source\\kapt\\debug\\com\\example\\myapplication\\database\\UserDao_Impl.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "app\\build.gradle.kts",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\build.gradle.kts",
+                        "sources": []
+                    },
+                    {
+                        "path": "app\\LoginPage.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\LoginPage.kt",
+                        "sources": []
+                    },
+                    {
+                        "path": "app\\src\\main\\java\\com\\example\\myapplication\\database\\AppDatabase.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\AppDatabase.kt",
+                        "sources": []
+                    },
+                    {
+                        "path": "app\\src\\main\\java\\com\\example\\myapplication\\ui\\theme\\MensagensScreen.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\ui\\theme\\MensagensScreen.kt",
+                        "sources": []
+                    },
+                    {
+                        "path": "build.gradle.kts",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\build.gradle.kts",
+                        "sources": []
+                    },
+                    {
+                        "path": "gradle\\libs.versions.toml",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\gradle\\libs.versions.toml",
+                        "sources": []
+                    },
+                    {
+                        "path": "app\\.gitignore",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\.gitignore",
+                        "sources": []
+                    },
+                    {
+                        "path": "gradle.properties",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\gradle.properties",
+                        "sources": []
+                    },
+                    {
+                        "path": ".gitignore",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\.gitignore",
+                        "sources": []
+                    },
+                    {
+                        "path": "gradle\\wrapper\\gradle-wrapper.properties",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\gradle\\wrapper\\gradle-wrapper.properties",
+                        "sources": []
+                    },
+                    {
+                        "path": "app\\src\\main\\java\\com\\example\\myapplication\\database\\User.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\User.kt",
+                        "sources": []
+                    },
+                    {
+                        "path": "app\\src\\main\\java\\com\\example\\myapplication\\AppDatabase.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\AppDatabase.kt",
+                        "sources": []
+                    },
+                    {
+                        "path": "app\\src\\main\\java\\com\\example\\myapplication\\MainActivity.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\MainActivity.kt",
+                        "sources": []
+                    },
+                    {
+                        "path": "app\\src\\main\\java\\com\\example\\myapplication\\SQLiteOpenHelper.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\SQLiteOpenHelper.kt",
+                        "sources": []
+                    },
+                    {
+                        "path": "app\\src\\main\\java\\com\\example\\myapplication\\database\\UserDao.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\UserDao.kt",
+                        "sources": []
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/routes/AppNavHost.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\routes\\AppNavHost.kt",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/ui/theme/Color.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\ui\\theme\\Color.kt",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/ui/theme/Horario.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\ui\\theme\\Horario.kt",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/ui/theme/HomePage.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\ui\\theme\\HomePage.kt",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/MainActivity.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\MainActivity.kt",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/ui/theme/MensagensScreen.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\ui\\theme\\MensagensScreen.kt",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/Pages/LoginPage.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\Pages\\LoginPage.kt",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/routes/Routes.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\routes\\Routes.kt",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/ui/theme/HomeScreen.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\ui\\theme\\HomeScreen.kt",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/database/AlertDao.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\AlertDao.kt",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "build.gradle.kts",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\build.gradle.kts",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "app/build.gradle.kts",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\build.gradle.kts",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/database/AppDatabase.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\AppDatabase.kt",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "app/src/main/java/com/example/myapplication/database/Converters.kt",
+                        "fsPath": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\Converters.kt",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    }
+                ],
+                "rerankedFiles": [],
+                "usedFilePaths": [
+                    {
+                        "path": "C:\\Users\\joaoc\\AndroidStudioProjects\\MyApplication2\\app\\src\\main\\java\\com\\example\\myapplication\\database\\Converters.kt",
+                        "fsPath": "C:/Users/joaoc/AndroidStudioProjects/MyApplication2/app/src/main/java/com/example/myapplication/database/Converters.kt",
+                        "content": "package com.example.myapplication.database\n\nimport androidx.room.TypeConverter\nimport java.util.Date\n\nclass Converters {\n\n    @TypeConverter\n    fun fromTimestamp(value: Long?): Date? {\n        return value?.let { Date(it) }\n    }\n\n    @TypeConverter\n    fun dateToTimestamp(date: Date?): Long? {\n        return date?.time\n    }\n}\n",
+                        "language": "kotlin"
+                    }
+                ]
+            },
+            "createdAt": 1752004850769,
+            "isInternal": false
+        }
+    ],
+    "isAgent": false,
+    "isNameGenerated": true,
+    "isCustomAgent": false
+}
+}
