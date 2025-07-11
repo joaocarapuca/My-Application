@@ -49,13 +49,13 @@ class AdminViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * Criar novo utilizador
      */
-    fun createUser(email: String, password: String, isAdmin: Boolean = false) {
+    fun createUser(name: String, email: String, password: String, isAdmin: Boolean = false) {
         viewModelScope.launch {
             _isLoading.value = true
             _message.value = null
             
             try {
-                val success = repository.registerUser(email, password, isAdmin)
+                val success = repository.registerUser(name, email, password, isAdmin)
                 if (success) {
                     _message.value = "Utilizador criado com sucesso!"
                 } else {

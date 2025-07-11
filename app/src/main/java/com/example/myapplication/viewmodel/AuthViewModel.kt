@@ -60,13 +60,13 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * Registar novo utilizador
      */
-    fun register(email: String, password: String) {
+    fun register(name: String, email: String, password: String) {
         viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
             
             try {
-                val success = repository.registerUser(email, password)
+                val success = repository.registerUser(name, email, password)
                 if (success) {
                     // Fazer login automático após registo
                     login(email, password)

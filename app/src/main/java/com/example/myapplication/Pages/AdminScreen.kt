@@ -124,6 +124,7 @@ fun AdminScreen(
 
 @Composable
 fun CreateUserTab(adminViewModel: AdminViewModel, isLoading: Boolean) {
+    var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isAdmin by remember { mutableStateOf(false) }
@@ -132,6 +133,14 @@ fun CreateUserTab(adminViewModel: AdminViewModel, isLoading: Boolean) {
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        OutlinedTextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text("Nome Completo") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
@@ -150,10 +159,24 @@ fun CreateUserTab(adminViewModel: AdminViewModel, isLoading: Boolean) {
             visualTransformation = PasswordVisualTransformation()
         )
 
+        // Checkbox para definir se é administrador
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Checkbox(
+                checked = isAdmin,
+                onCheckedChange = { isAdmin = it }
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("É Professor/Administrador")
+        }
+
         Button(
             onClick = {
-                if (email.isNotBlank() && password.isNotBlank()) {
-                    adminViewModel.createUser(email, password, isAdmin)
+                if (name.isNotBlank() && email.isNotBlank() && password.isNotBlank()) {
+                    adminViewModel.createUser(name, email, password, isAdmin)
+                    name = ""
                     email = ""
                     password = ""
                     isAdmin = false
@@ -176,21 +199,6 @@ fun CreateUserTab(adminViewModel: AdminViewModel, isLoading: Boolean) {
             } else {
                 Text("Criar Utilizador", color = Color.White)
             }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        // Checkbox para definir se é administrador
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Checkbox(
-                checked = isAdmin,
-                onCheckedChange = { isAdmin = it }
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("É Administrador")
         }
     }
 }
@@ -222,12 +230,17 @@ fun ManageUsersTab(users: List<User>, adminViewModel: AdminViewModel, isLoading:
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = user.email,
+                            text = user.name,
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = if (user.isAdmin) "Administrador" else "Utilizador",
+                            text = user.email,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color(0xFF666666)
+                        )
+                        Text(
+                            text = if (user.isAdmin) "Professor/Administrador" else "Estudante",
                             style = MaterialTheme.typography.bodySmall,
                             color = if (user.isAdmin) Color(0xFF2E7D32) else Color(0xFF666666)
                         )
@@ -279,7 +292,7 @@ fun ManageUsersTab(users: List<User>, adminViewModel: AdminViewModel, isLoading:
             title = { Text("Alterar Senha") },
             text = {
                 Column {
-                    Text("Alterar senha para: ${selectedUser!!.email}")
+                    Text("Alterar senha para: ${selectedUser!!.name}")
                     Spacer(modifier = Modifier.height(16.dp))
                     OutlinedTextField(
                         value = newPassword,

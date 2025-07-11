@@ -29,4 +29,7 @@ interface UserDao {
 
     @Query("SELECT * FROM users WHERE isAdmin = 1")
     fun getTeachers(): Flow<List<User>>
+
+    @Query("SELECT * FROM users WHERE isAdmin = 0")
+    fun getStudents(): Flow<List<User>>
 }

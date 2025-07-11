@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Schedule // Ícone para "horário"
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
@@ -32,13 +33,13 @@ fun HomePage(
     authViewModel: AuthViewModel = viewModel()
 ) {
     val bottomNavController = rememberNavController()
+    val currentUser by authViewModel.currentUser.collectAsState()
 
     val items = listOf(
         BottomNavItem("Home", Icons.Default.Home, Routes.HOME_SCREEN),
         BottomNavItem("Mensagens", Icons.Default.Email, Routes.MENSAGENS),
         BottomNavItem("Horário", Icons.Default.Schedule, Routes.HORARIO),
         BottomNavItem("Perfil", Icons.Default.Person, Routes.PERFIL)
-
     )
 
     Scaffold(
@@ -78,7 +79,7 @@ fun HomePage(
                 }
                 composable(Routes.MENSAGENS) {
                     MensagensScreen(
-                        username = "Laura",
+                        username = currentUser?.name ?: "Usuário",
                         navController = bottomNavController
                     )
                 }
@@ -87,8 +88,8 @@ fun HomePage(
                 }
                 composable(Routes.PERFIL) {
                     PerfilScreen(
-                        nome = "Laura Remechido",
-                        email = "26603@stu.ipbeja.pt",
+                        nome = currentUser?.name ?: "",
+                        email = currentUser?.email ?: "",
                         onLogout = {
                             authViewModel.logout()
                             navController.navigate(Routes.LOGIN) {

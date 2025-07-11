@@ -14,7 +14,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.ui.theme.Typography
+import com.example.myapplication.viewmodel.AuthViewModel
 
 @Composable
 fun MyApp() {
@@ -31,12 +33,13 @@ fun MyApp() {
 
 @Composable
 fun PerfilScreen(
-    nome: String = "Laura Remechido",
-    email: String = "26603@stu.ipbeja.pt",
+    nome: String = "",
+    email: String = "",
     curso: String = "Tecnologia Web e Dispositivos Móveis",
     onLogout: () -> Unit,
     onThemeChange: (Boolean) -> Unit,
-    isDarkTheme: Boolean
+    isDarkTheme: Boolean,
+    authViewModel: AuthViewModel = viewModel()
 ) {
     var showPasswordFields by remember { mutableStateOf(false) }
     var oldPassword by remember { mutableStateOf("") }
@@ -45,6 +48,11 @@ fun PerfilScreen(
     var showAboutDialog by remember { mutableStateOf(false) }
 
     val colorScheme = MaterialTheme.colorScheme
+    val currentUser by authViewModel.currentUser.collectAsState()
+
+    // Usar dados do usuário logado
+    val displayName = currentUser?.name ?: nome
+    val displayEmail = currentUser?.email ?: email
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -67,17 +75,48 @@ fun PerfilScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.Person,
-                    contentDescription = "Logo",
+                    contentDescription = "Avatar",
                     tint = colorScheme.onPrimaryContainer,
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .size(60.dp)
                 )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text(nome, fontSize = 24.sp, fontWeight = FontWeight.Bold, color = colorScheme.onBackground)
-            Text(email, fontSize = 16.sp, color = colorScheme.onBackground.copy(alpha = 0.6f))
-            Text(curso, fontSize = 16.sp, color = colorScheme.onBackground.copy(alpha = 0.6f))
+            Text(
+                text = displayName,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = colorScheme.onBackground
+            )
+            Text(
+                text = displayEmail,
+                fontSize = 16.sp,
+                color = colorScheme.onBackground.copy(alpha = 0.6f)
+            )
+            Text(
+                text = curso,
+                fontSize = 16.sp,
+                color = colorScheme.onBackground.copy(alpha = 0.6f)
+            )
+
+            if (currentUser?.isAdmin == true) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = colorScheme.primaryContainer
+                    )
+                ) {
+                    Text(
+                        text = "👨‍🏫 Professor/Administrador",
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                        color = colorScheme.onPrimaryContainer,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -181,7 +220,7 @@ fun PerfilScreen(
             text = {
                 Column {
                     Text(
-                        text = "📱 MyApplication",
+                        text = "📱 BejaConnect",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = colorScheme.onBackground

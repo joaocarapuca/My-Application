@@ -22,12 +22,12 @@ class UserRepository(private val database: AppDatabase) {
     /**
      * Registar novo utilizador
      */
-    suspend fun registerUser(email: String, password: String, isAdmin: Boolean = false): Boolean {
+    suspend fun registerUser(name: String, email: String, password: String, isAdmin: Boolean = false): Boolean {
         return try {
             if (userDao.emailExists(email) > 0) {
                 false // Email já existe
             } else {
-                val user = User(email = email, password = password, isAdmin = isAdmin)
+                val user = User(name = name, email = email, password = password, isAdmin = isAdmin)
                 userDao.insertUser(user)
                 true
             }
@@ -69,4 +69,14 @@ class UserRepository(private val database: AppDatabase) {
             false
         }
     }
+
+    /**
+     * Obter estudantes (não admins)
+     */
+    fun getStudents(): Flow<List<User>> = userDao.getStudents()
+
+    /**
+     * Obter professores (admins)
+     */
+    fun getTeachers(): Flow<List<User>> = userDao.getTeachers()
 }

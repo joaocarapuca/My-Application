@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
  */
 @Database(
     entities = [User::class, Message::class, Post::class, Like::class, Schedule::class, Alert::class],
-    version = 1,
+    version = 2, // Incrementar versão devido à mudança na estrutura
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -37,6 +37,7 @@ abstract class AppDatabase : RoomDatabase() {
                     "app_database"
                 )
                 .addCallback(DatabaseCallback())
+                .fallbackToDestructiveMigration() // Para desenvolvimento - remove em produção
                 .build()
                 INSTANCE = instance
                 instance
@@ -66,21 +67,21 @@ abstract class AppDatabase : RoomDatabase() {
             
             // Criar utilizador administrador
             userDao.insertUser(
-                User(email = "admin", password = "1234", isAdmin = true)
+                User(name = "Administrador", email = "admin", password = "1234", isAdmin = true)
             )
             
             // Criar utilizadores de teste
             userDao.insertUser(
-                User(email = "joao@ipbeja.pt", password = "1234", isAdmin = false)
+                User(name = "João Carapuça", email = "joao@ipbeja.pt", password = "1234", isAdmin = false)
             )
             userDao.insertUser(
-                User(email = "maria@ipbeja.pt", password = "1234", isAdmin = false)
+                User(name = "Maria Silva", email = "maria@ipbeja.pt", password = "1234", isAdmin = false)
             )
             userDao.insertUser(
-                User(email = "laura@ipbeja.pt", password = "1234", isAdmin = false)
+                User(name = "Laura Remechido", email = "laura@ipbeja.pt", password = "1234", isAdmin = false)
             )
             userDao.insertUser(
-                User(email = "professor@ipbeja.pt", password = "1234", isAdmin = true)
+                User(name = "Professor António", email = "professor@ipbeja.pt", password = "1234", isAdmin = true)
             )
             
             // Criar horários de exemplo

@@ -38,7 +38,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.viewmodel.AlertViewModel
+import com.example.myapplication.viewmodel.AuthViewModel
 import com.example.myapplication.database.AlertWithSender
+import com.example.myapplication.database.User
+import com.example.myapplication.repository.UserRepository
+import com.example.myapplication.database.AppDatabase
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -59,7 +65,8 @@ data class ChatMessage(
 
 data class ChatUser(
     val name: String,
-    val avatar: Int
+    val email: String,
+    val isTeacher: Boolean = false
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,12 +74,41 @@ data class ChatUser(
 fun MensagensScreen(
     username: String, 
     navController: NavController? = null,
-    alertViewModel: AlertViewModel = viewModel()
+    alertViewModel: AlertViewModel = viewModel(),
+    authViewModel: AuthViewModel = viewModel()
 ) {
-    val users = listOf(
-        ChatUser("João Carapuça", R.drawable.ic_launcher_foreground),
-        ChatUser("David Destapado", R.drawable.ic_launcher_foreground)
-    )
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    
+    // Estados para usuários
+    var teachers by remember { mutableStateOf<List<User>>(emptyList()) }
+    var students by remember { mutableStateOf<List<User>>(emptyList()) }
+    
+    val currentUser by authViewModel.currentUser.collectAsState()
+    val isTeacher = currentUser?.isAdmin == true
+    
+    // Carregar usuários
+    LaunchedEffect(Unit) {
+        scope.launch {
+            val database = AppDatabase.getDatabase(context)
+            val userRepository = UserRepository(database)
+            
+            userRepository.getTeachers().collect { teacherList ->
+                teachers = teacherList
+            }
+        }
+    }
+    
+    LaunchedEffect(Unit) {
+        scope.launch {
+            val database = AppDatabase.getDatabase(context)
+            val userRepository = UserRepository(database)
+            
+            userRepository.getStudents().collect { studentList ->
+                students = studentList
+            }
+        }
+    }
 
     val grupos = listOf("SI", "TW", "Design")
     
@@ -86,23 +122,21 @@ fun MensagensScreen(
     var inputText by remember { mutableStateOf("") }
 
     val mensagensUsuarios = remember {
-        mutableStateMapOf(
-            "João Carapuça" to mutableStateListOf(
-                ChatMessage("Eai, tudo bem?", false),
-                ChatMessage("Sim e tu?", true)
-            ),
-            "David Destapado" to mutableStateListOf(
-                ChatMessage("Reunião 18h?", false),
-                ChatMessage("Pode ser!", true)
-            )
-        )
+        mutableStateMapOf<String, MutableList<ChatMessage>>()
     }
 
     val mensagensGrupos = mapOf(
         "SI" to listOf(ChatMessage("Revisão amanhã", false), ChatMessage("Confirmado", true)),
         "TW" to listOf(ChatMessage("Materia nova adicionada", false), ChatMessage("ok!", true)),
-        "Design" to listOf(ChatMessage("Recuperação de desing dia 10_06 as 15:30", false))
+        "Design" to listOf(ChatMessage("Recuperação de design dia 10/06 as 15:30", false))
     )
+
+    // Determinar quais abas mostrar baseado no tipo de usuário
+    val tabTitles = if (isTeacher) {
+        listOf("Estudantes", "Grupos", "Alertas")
+    } else {
+        listOf("Professores", "Grupos", "Alertas")
+    }
 
     Scaffold(
         topBar = {
@@ -141,7 +175,7 @@ fun MensagensScreen(
 
             if (chatSelecionado == null && grupoSelecionado == null) {
                 TabRow(selectedTabIndex = tabIndex, modifier = Modifier.background(Color.White)) {
-                    listOf("Chats", "Grupos", "Alertas").forEachIndexed { index, title ->
+                    tabTitles.forEachIndexed { index, title ->
                         Tab(
                             selected = tabIndex == index,
                             onClick = { tabIndex = index },
@@ -156,10 +190,14 @@ fun MensagensScreen(
                     }
                 }
             }
-/*perguntar ao stor o porque deste erro  mas nao esta a afetar o codigo abaixo que é do chat*/
+
             when {
                 chatSelecionado != null -> {
-                    val msgs = mensagensUsuarios[chatSelecionado!!.name] ?: mutableStateListOf()
+                    val msgs = mensagensUsuarios.getOrPut(chatSelecionado!!.name) { 
+                        mutableStateListOf(
+                            ChatMessage("Olá! Como posso ajudar?", !isTeacher)
+                        )
+                    }
                     ChatConversation(messages = msgs, inputText = inputText, onInputChange = { inputText = it }) {
                         if (inputText.isNotBlank()) {
                             msgs.add(ChatMessage(inputText.trim(), true))
@@ -176,9 +214,16 @@ fun MensagensScreen(
                 else -> {
                     when (tabIndex) {
                         0 -> {
+                            // Professores para estudantes, Estudantes para professores
+                            val usersToShow = if (isTeacher) students else teachers
                             LazyColumn(Modifier.padding(12.dp)) {
-                                items(users) { user ->
-                                    ChatUserItem(user = user) { chatSelecionado = user }
+                                items(usersToShow) { user ->
+                                    val chatUser = ChatUser(
+                                        name = user.name,
+                                        email = user.email,
+                                        isTeacher = user.isAdmin
+                                    )
+                                    ChatUserItem(user = chatUser) { chatSelecionado = chatUser }
                                 }
                             }
                         }
@@ -351,20 +396,9 @@ fun ChatUserItem(user: ChatUser, onClick: () -> Unit) {
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Ícone redondo representando o avatar - substituir por Image depois nao esquecer de remover a linha superior
-        /*
-        Image(
-            painter = painterResource(id = user.nome da img ),
-            contentDescription = null,
-            modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
-        )
-        */
-        // Ícone padrão para avatar (exemplo) - usar enquanto não tem imagem real
+        // Ícone padrão para avatar
         Icon(
-            imageVector = Icons.Default.Person,
+            imageVector = if (user.isTeacher) Icons.Default.School else Icons.Default.Person,
             contentDescription = "Avatar",
             tint = COLOR_PRIMARY,
             modifier = Modifier
@@ -376,12 +410,25 @@ fun ChatUserItem(user: ChatUser, onClick: () -> Unit) {
 
         Spacer(modifier = Modifier.width(12.dp))
         Column {
-            Text(text = user.name, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = COLOR_TEXT_PRIMARY)
-            Text(text = "Toque para conversar", color = COLOR_TEXT_SECONDARY, fontSize = 14.sp)
+            Text(
+                text = user.name, 
+                fontWeight = FontWeight.Bold, 
+                fontSize = 18.sp, 
+                color = COLOR_TEXT_PRIMARY
+            )
+            Text(
+                text = if (user.isTeacher) "👨‍🏫 Professor" else "👨‍🎓 Estudante", 
+                color = COLOR_TEXT_SECONDARY, 
+                fontSize = 14.sp
+            )
+            Text(
+                text = user.email, 
+                color = Color.Gray, 
+                fontSize = 12.sp
+            )
         }
     }
 }
-
 
 @Composable
 fun GroupItem(grupo: String, onClick: (String) -> Unit) {
