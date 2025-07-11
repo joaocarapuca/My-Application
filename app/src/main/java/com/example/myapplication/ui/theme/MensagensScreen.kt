@@ -39,9 +39,13 @@ import androidx.navigation.NavController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.viewmodel.AlertViewModel
 import com.example.myapplication.viewmodel.AuthViewModel
+import com.example.myapplication.viewmodel.GroupViewModel
 import com.example.myapplication.database.AlertWithSender
+import com.example.myapplication.database.GroupMessageWithSender
 import com.example.myapplication.database.User
+import com.example.myapplication.database.Group
 import com.example.myapplication.repository.UserRepository
+import com.example.myapplication.repository.MessageRepository
 import com.example.myapplication.database.AppDatabase
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
@@ -65,6 +69,7 @@ data class ChatMessage(
 
 data class ChatUser(
     val name: String,
+    val id: Int,
     val email: String,
     val isTeacher: Boolean = false
 )
@@ -75,7 +80,8 @@ fun MensagensScreen(
     username: String, 
     navController: NavController? = null,
     alertViewModel: AlertViewModel = viewModel(),
-    authViewModel: AuthViewModel = viewModel()
+    authViewModel: AuthViewModel = viewModel(),
+    groupViewModel: GroupViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -84,8 +90,31 @@ fun MensagensScreen(
     var teachers by remember { mutableStateOf<List<User>>(emptyList()) }
     var students by remember { mutableStateOf<List<User>>(emptyList()) }
     
+    // Repositório de mensagens
+    var messageRepository by remember { mutableStateOf<MessageRepository?>(null) }
+    
     val currentUser by authViewModel.currentUser.collectAsState()
     val isTeacher = currentUser?.isAdmin == true
+    
+    // Estados para chat
+    var chatSelecionado by remember { mutableStateOf<ChatUser?>(null) }
+    var grupoSelecionado by remember { mutableStateOf<Group?>(null) }
+    var inputText by remember { mutableStateOf("") }
+    var tabIndex by remember { mutableStateOf(0) }
+    
+    // Mensagens privadas
+    var privateMessages by remember { mutableStateOf<List<com.example.myapplication.database.Message>>(emptyList()) }
+    
+    // Observar grupos e mensagens do ViewModel
+    val userGroups by groupViewModel.userGroups.collectAsState()
+    val groupMessages by groupViewModel.groupMessages.collectAsState()
+    val alerts by alertViewModel.alerts.collectAsState()
+    
+    // Inicializar repositório de mensagens
+    LaunchedEffect(Unit) {
+        val database = AppDatabase.getDatabase(context)
+        messageRepository = MessageRepository(database)
+    }
     
     // Carregar usuários
     LaunchedEffect(Unit) {
@@ -99,6 +128,29 @@ fun MensagensScreen(
         }
     }
     
+    // Carregar grupos do usuário
+    LaunchedEffect(currentUser) {
+        currentUser?.let { user ->
+            groupViewModel.loadUserGroups(user.id)
+        }
+    }
+    
+    // Carregar mensagens privadas quando um chat é selecionado
+    LaunchedEffect(chatSelecionado, currentUser) {
+        if (chatSelecionado != null && currentUser != null && messageRepository != null) {
+            messageRepository!!.getMessagesBetweenUsers(currentUser.id, chatSelecionado!!.id).collect { messages ->
+                privateMessages = messages
+            }
+        }
+    }
+    
+    // Carregar mensagens do grupo quando um grupo é selecionado
+    LaunchedEffect(grupoSelecionado) {
+        grupoSelecionado?.let { group ->
+            groupViewModel.loadGroupMessages(group.id)
+        }
+    }
+
     LaunchedEffect(Unit) {
         scope.launch {
             val database = AppDatabase.getDatabase(context)
@@ -110,32 +162,13 @@ fun MensagensScreen(
         }
     }
 
-    val grupos = listOf("SI", "TW", "Design")
-    
-    // Observar alertas do ViewModel
-    val alerts by alertViewModel.alerts.collectAsState()
     val unreadCount by alertViewModel.unreadCount.collectAsState()
-
-    var tabIndex by remember { mutableStateOf(0) }
-    var chatSelecionado by remember { mutableStateOf<ChatUser?>(null) }
-    var grupoSelecionado by remember { mutableStateOf<String?>(null) }
-    var inputText by remember { mutableStateOf("") }
-
-    val mensagensUsuarios = remember {
-        mutableStateMapOf<String, MutableList<ChatMessage>>()
-    }
-
-    val mensagensGrupos = mapOf(
-        "SI" to listOf(ChatMessage("Revisão amanhã", false), ChatMessage("Confirmado", true)),
-        "TW" to listOf(ChatMessage("Materia nova adicionada", false), ChatMessage("ok!", true)),
-        "Design" to listOf(ChatMessage("Recuperação de design dia 10/06 as 15:30", false))
-    )
 
     // Determinar quais abas mostrar baseado no tipo de usuário
     val tabTitles = if (isTeacher) {
-        listOf("Estudantes", "Grupos", "Alertas")
+        listOf("Utilizadores", "Grupos", "Alertas")
     } else {
-        listOf("Professores", "Grupos", "Alertas")
+        listOf("Utilizadores", "Grupos", "Alertas")
     }
 
     Scaffold(
@@ -143,7 +176,7 @@ fun MensagensScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = chatSelecionado?.name ?: grupoSelecionado ?: "BejaConnect",
+                        text = chatSelecionado?.name ?: grupoSelecionado?.name ?: "BejaConnect",
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
@@ -154,6 +187,7 @@ fun MensagensScreen(
                         IconButton(onClick = {
                             chatSelecionado = null
                             grupoSelecionado = null
+                            groupViewModel.clearCurrentGroup()
                         }) {
                             Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.White)
                         }
@@ -193,32 +227,56 @@ fun MensagensScreen(
 
             when {
                 chatSelecionado != null -> {
-                    val msgs = mensagensUsuarios.getOrPut(chatSelecionado!!.name) { 
-                        mutableStateListOf(
-                            ChatMessage("Olá! Como posso ajudar?", !isTeacher)
-                        )
-                    }
-                    ChatConversation(messages = msgs, inputText = inputText, onInputChange = { inputText = it }) {
+                    // Chat privado
+                    PrivateChatConversation(
+                        messages = privateMessages,
+                        currentUserId = currentUser?.id ?: 0,
+                        inputText = inputText,
+                        onInputChange = { inputText = it }
+                    ) {
                         if (inputText.isNotBlank()) {
-                            msgs.add(ChatMessage(inputText.trim(), true))
+                            scope.launch {
+                                messageRepository?.sendMessage(
+                                    currentUser?.id ?: 0,
+                                    chatSelecionado!!.id,
+                                    inputText.trim()
+                                )
+                            }
                             inputText = ""
                         }
                     }
                 }
 
                 grupoSelecionado != null -> {
-                    val msgs = mensagensGrupos[grupoSelecionado!!] ?: emptyList()
-                    ChatConversation(messages = msgs)
+                    // Chat do grupo
+                    GroupChatConversation(
+                        messages = groupMessages,
+                        currentUserId = currentUser?.id ?: 0,
+                        inputText = inputText,
+                        onInputChange = { inputText = it }
+                    ) {
+                        if (inputText.isNotBlank()) {
+                            groupViewModel.sendGroupMessage(
+                                grupoSelecionado!!.id,
+                                currentUser?.id ?: 0,
+                                inputText.trim()
+                            )
+                            inputText = ""
+                        }
+                    }
                 }
 
                 else -> {
                     when (tabIndex) {
                         0 -> {
-                            // Professores para estudantes, Estudantes para professores
-                            val usersToShow = if (isTeacher) students else teachers
+                            // Todos os utilizadores (exceto o próprio)
+                            val allUsers = teachers + students
+                            val usersToShow = allUsers.filter { it.id != currentUser?.id }
+                            
                             LazyColumn(Modifier.padding(12.dp)) {
                                 items(usersToShow) { user ->
                                     val chatUser = ChatUser(
+                                        id = user.id,
                                         name = user.name,
                                         email = user.email,
                                         isTeacher = user.isAdmin
@@ -229,9 +287,13 @@ fun MensagensScreen(
                         }
 
                         1 -> {
+                            // Grupos do utilizador
                             LazyColumn(Modifier.padding(12.dp)) {
-                                items(grupos) { grupo ->
-                                    GroupItem(grupo = grupo) { grupoSelecionado = it }
+                                items(userGroups) { group ->
+                                    GroupItem(group = group) { 
+                                        grupoSelecionado = it
+                                        groupViewModel.setCurrentGroup(it)
+                                    }
                                 }
                             }
                         }
@@ -431,12 +493,12 @@ fun ChatUserItem(user: ChatUser, onClick: () -> Unit) {
 }
 
 @Composable
-fun GroupItem(grupo: String, onClick: (String) -> Unit) {
+fun GroupItem(group: Group, onClick: (Group) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(6.dp)
-            .clickable { onClick(grupo) }
+            .clickable { onClick(group) }
             .background(Color.White),
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(12.dp)
@@ -452,69 +514,20 @@ fun GroupItem(grupo: String, onClick: (String) -> Unit) {
                 fontSize = 24.sp,
                 modifier = Modifier.padding(end = 12.dp)
             )
-            Text(
-                text = grupo,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Medium,
-                color = COLOR_TEXT_PRIMARY
-            )
-        }
-    }
-}
-
-@Composable
-fun ChatConversation(
-    messages: List<ChatMessage>,
-    inputText: String = "",
-    onInputChange: (String) -> Unit = {},
-    onSend: () -> Unit = {}
-) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp),
-            reverseLayout = true
-        ) {
-            items(messages.reversed()) { msg ->
-                Row(
-                    horizontalArrangement = if (msg.fromMe) Arrangement.End else Arrangement.Start,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                color = if (msg.fromMe) COLOR_MSG_ME else COLOR_MSG_OTHER,
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                            .padding(12.dp)
-                    ) {
-                        Text(text = msg.content, fontSize = 16.sp, color = COLOR_TEXT_PRIMARY)
-                    }
+            Column {
+                Text(
+                    text = group.name,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = COLOR_TEXT_PRIMARY
+                )
+                if (group.description.isNotBlank()) {
+                    Text(
+                        text = group.description,
+                        fontSize = 14.sp,
+                        color = Color.Gray
+                    )
                 }
-            }
-        }
-
-        // Campo para digitar mensagem
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White)
-                .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            OutlinedTextField(
-                value = inputText,
-                onValueChange = onInputChange,
-                modifier = Modifier.weight(1f),
-                placeholder = { Text("Digite sua mensagem") },
-                maxLines = 2
-            )
-            IconButton(onClick = onSend) {
-                Icon(Icons.Default.Send, contentDescription = null, tint = COLOR_PRIMARY)
             }
         }
     }

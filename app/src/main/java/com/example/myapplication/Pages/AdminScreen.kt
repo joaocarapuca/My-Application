@@ -27,7 +27,10 @@ import com.example.myapplication.viewmodel.AdminViewModel
 import com.example.myapplication.viewmodel.PostViewModel
 import com.example.myapplication.viewmodel.ScheduleViewModel
 import com.example.myapplication.viewmodel.AlertViewModel
+import com.example.myapplication.viewmodel.GroupViewModel
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 
 @Composable
 fun AdminScreen(
@@ -36,10 +39,11 @@ fun AdminScreen(
     adminViewModel: AdminViewModel = viewModel(),
     postViewModel: PostViewModel = viewModel(),
     scheduleViewModel: ScheduleViewModel = viewModel(),
-    alertViewModel: AlertViewModel = viewModel()
+    alertViewModel: AlertViewModel = viewModel(),
+    groupViewModel: GroupViewModel = viewModel()
 ) {
     var selectedTab by remember { mutableStateOf(0) }
-    val tabTitles = listOf("Utilizadores", "Gerir Utilizadores", "Criar Post", "Gerir Horários", "Enviar Alerta")
+    val tabTitles = listOf("Utilizadores", "Gerir Utilizadores", "Criar Post", "Gerir Horários", "Gerir Grupos", "Enviar Alerta")
     
     // Observar estados do ViewModel
     val users by adminViewModel.users.collectAsState()
@@ -117,7 +121,8 @@ fun AdminScreen(
             1 -> ManageUsersTab(users, adminViewModel, isLoading)
             2 -> CreatePostTab(postViewModel)
             3 -> ManageScheduleTab(scheduleViewModel)
-            4 -> SendAlertTab(alertViewModel)
+            4 -> ManageGroupsTab(groupViewModel, adminViewModel)
+            5 -> SendAlertTab(alertViewModel)
         }
     }
 }
@@ -585,6 +590,355 @@ fun ManageScheduleTab(scheduleViewModel: ScheduleViewModel) {
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun ManageGroupsTab(groupViewModel: GroupViewModel, adminViewModel: AdminViewModel) {
+    var selectedSubTab by remember { mutableStateOf(0) }
+    val subTabTitles = listOf("Criar Grupo", "Gerir Membros")
+    
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text(
+            text = "Gerir Grupos",
+            style = MaterialTheme.typography.headlineSmall,
+            color = Color(0xFF4CAF50)
+        )
+        
+        TabRow(
+            selectedTabIndex = selectedSubTab,
+            containerColor = Color(0xFFE8F5E9),
+            contentColor = Color(0xFF4CAF50)
+        ) {
+            subTabTitles.forEachIndexed { index, title ->
+                Tab(
+                    selected = selectedSubTab == index,
+                    onClick = { selectedSubTab = index },
+                    text = { Text(title) }
+                )
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        when (selectedSubTab) {
+            0 -> CreateGroupSubTab(groupViewModel)
+            1 -> ManageGroupMembersSubTab(groupViewModel, adminViewModel)
+        }
+    }
+}
+
+@Composable
+fun CreateGroupSubTab(groupViewModel: GroupViewModel) {
+    var groupName by remember { mutableStateOf("") }
+    var groupDescription by remember { mutableStateOf("") }
+    
+    val groups by groupViewModel.groups.collectAsState()
+    val isLoading by groupViewModel.isLoading.collectAsState()
+    val message by groupViewModel.message.collectAsState()
+    
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        OutlinedTextField(
+            value = groupName,
+            onValueChange = { groupName = it },
+            label = { Text("Nome do Grupo") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            placeholder = { Text("Ex: SI, TW, Design") }
+        )
+        
+        OutlinedTextField(
+            value = groupDescription,
+            onValueChange = { groupDescription = it },
+            label = { Text("Descrição") },
+            modifier = Modifier.fillMaxWidth(),
+            maxLines = 3,
+            placeholder = { Text("Descrição do grupo...") }
+        )
+        
+        Button(
+            onClick = {
+                if (groupName.isNotBlank()) {
+                    groupViewModel.createGroup(groupName, groupDescription, 1) // ID 1 = admin
+                    groupName = ""
+                    groupDescription = ""
+                }
+            },
+            enabled = !isLoading,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+        ) {
+            if (isLoading) {
+                CircularProgressIndicator(
+                    color = Color.White,
+                    modifier = Modifier.size(20.dp)
+                )
+            } else {
+                Text("Criar Grupo", color = Color.White)
+            }
+        }
+        
+        message?.let { msg ->
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = if (msg.contains("sucesso")) Color(0xFFE8F5E9) else Color(0xFFFFEBEE)
+                )
+            ) {
+                Text(
+                    text = msg,
+                    modifier = Modifier.padding(16.dp),
+                    color = if (msg.contains("sucesso")) Color(0xFF2E7D32) else Color(0xFFD32F2F)
+                )
+            }
+        }
+        
+        // Lista de grupos existentes
+        Text(
+            text = "Grupos Existentes:",
+            style = MaterialTheme.typography.titleMedium,
+            color = Color(0xFF4CAF50),
+            modifier = Modifier.padding(top = 16.dp)
+        )
+        
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(groups.size) { index ->
+                val group = groups[index]
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFE8F5E9)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = group.name,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            if (group.description.isNotBlank()) {
+                                Text(
+                                    text = group.description,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.Gray
+                                )
+                            }
+                        }
+                        
+                        IconButton(
+                            onClick = {
+                                groupViewModel.deleteGroup(group)
+                            }
+                        ) {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = "Eliminar",
+                                tint = Color(0xFFD32F2F)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ManageGroupMembersSubTab(groupViewModel: GroupViewModel, adminViewModel: AdminViewModel) {
+    var selectedGroup by remember { mutableStateOf<Group?>(null) }
+    
+    val groups by groupViewModel.groups.collectAsState()
+    val groupMembers by groupViewModel.groupMembers.collectAsState()
+    val availableUsers by groupViewModel.availableUsers.collectAsState()
+    val message by groupViewModel.message.collectAsState()
+    
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        // Seletor de grupo
+        Text(
+            text = "Selecionar Grupo:",
+            style = MaterialTheme.typography.titleMedium,
+            color = Color(0xFF4CAF50)
+        )
+        
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(horizontal = 4.dp)
+        ) {
+            items(groups.size) { index ->
+                val group = groups[index]
+                Card(
+                    modifier = Modifier.clickable {
+                        selectedGroup = group
+                        groupViewModel.setCurrentGroup(group)
+                    },
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (selectedGroup?.id == group.id) Color(0xFF4CAF50) else Color(0xFFE8F5E9)
+                    )
+                ) {
+                    Text(
+                        text = group.name,
+                        modifier = Modifier.padding(12.dp),
+                        color = if (selectedGroup?.id == group.id) Color.White else Color(0xFF4CAF50),
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+        }
+        
+        selectedGroup?.let { group ->
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Text(
+                text = "Membros do Grupo: ${group.name}",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color(0xFF4CAF50)
+            )
+            
+            // Lista de membros atuais
+            LazyColumn(
+                modifier = Modifier.height(200.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                items(groupMembers.size) { index ->
+                    val member = groupMembers[index]
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = member.name,
+                                    fontWeight = FontWeight.Medium
+                                )
+                                Text(
+                                    text = member.email,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.Gray
+                                )
+                            }
+                            
+                            IconButton(
+                                onClick = {
+                                    groupViewModel.removeMemberFromGroup(group.id, member.id)
+                                }
+                            ) {
+                                Icon(
+                                    Icons.Default.Delete,
+                                    contentDescription = "Remover",
+                                    tint = Color(0xFFD32F2F)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Text(
+                text = "Adicionar Utilizadores:",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color(0xFF4CAF50)
+            )
+            
+            // Lista de utilizadores disponíveis para adicionar
+            LazyColumn(
+                modifier = Modifier.height(200.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                items(availableUsers.filter { user -> 
+                    groupMembers.none { member -> member.id == user.id }
+                }.size) { index ->
+                    val user = availableUsers.filter { user -> 
+                        groupMembers.none { member -> member.id == user.id }
+                    }[index]
+                    
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5))
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = user.name,
+                                    fontWeight = FontWeight.Medium
+                                )
+                                Text(
+                                    text = user.email,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.Gray
+                                )
+                                Text(
+                                    text = if (user.isAdmin) "Professor" else "Estudante",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = if (user.isAdmin) Color(0xFF2E7D32) else Color(0xFF666666)
+                                )
+                            }
+                            
+                            Button(
+                                onClick = {
+                                    groupViewModel.addMemberToGroup(group.id, user.id)
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+                            ) {
+                                Text("Adicionar", color = Color.White)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        message?.let { msg ->
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = if (msg.contains("sucesso")) Color(0xFFE8F5E9) else Color(0xFFFFEBEE)
+                )
+            ) {
+                Text(
+                    text = msg,
+                    modifier = Modifier.padding(16.dp),
+                    color = if (msg.contains("sucesso")) Color(0xFF2E7D32) else Color(0xFFD32F2F)
+                )
             }
         }
     }
