@@ -11,8 +11,8 @@ import kotlinx.coroutines.launch
  * Base de dados principal da aplicação
  */
 @Database(
-    entities = [User::class, Message::class, Post::class, Like::class, Schedule::class, Alert::class],
-    version = 2, // Incrementar versão devido à mudança na estrutura
+    entities = [User::class, Message::class, Post::class, Like::class, Schedule::class, Alert::class, Group::class, GroupMember::class, GroupMessage::class],
+    version = 3, // Incrementar versão para incluir grupos
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -24,6 +24,9 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun likeDao(): LikeDao
     abstract fun scheduleDao(): ScheduleDao
     abstract fun alertDao(): AlertDao
+    abstract fun groupDao(): GroupDao
+    abstract fun groupMemberDao(): GroupMemberDao
+    abstract fun groupMessageDao(): GroupMessageDao
     
     companion object {
         @Volatile
@@ -94,6 +97,26 @@ abstract class AppDatabase : RoomDatabase() {
             scheduleDao.insertSchedule(
                 Schedule(timeSlot = "14:00-16:00", monday = "Design", tuesday = "SI", wednesday = "TW", thursday = "Matemática", friday = "Design")
             )
+            
+            // Criar grupos de exemplo
+            val groupDao = database.groupDao()
+            val groupMemberDao = database.groupMemberDao()
+            
+            val siGroupId = groupDao.insertGroup(
+                Group(name = "SI", description = "Sistemas de Informação", createdBy = 1)
+            )
+            val twGroupId = groupDao.insertGroup(
+                Group(name = "TW", description = "Tecnologia Web", createdBy = 1)
+            )
+            val designGroupId = groupDao.insertGroup(
+                Group(name = "Design", description = "Design e Multimédia", createdBy = 1)
+            )
+            
+            // Adicionar utilizadores aos grupos
+            groupMemberDao.insertGroupMember(GroupMember(groupId = siGroupId.toInt(), userId = 2))
+            groupMemberDao.insertGroupMember(GroupMember(groupId = twGroupId.toInt(), userId = 3))
+            groupMemberDao.insertGroupMember(GroupMember(groupId = designGroupId.toInt(), userId = 4))
+            groupMemberDao.insertGroupMember(GroupMember(groupId = siGroupId.toInt(), userId = 5))
         }
     }
 }
