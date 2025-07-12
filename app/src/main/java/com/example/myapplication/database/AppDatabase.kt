@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
  */
 @Database(
     entities = [User::class, Message::class, Post::class, Like::class, Schedule::class, Alert::class, Group::class, GroupMember::class, GroupMessage::class],
-    version = 3, // Incrementar versão para incluir grupos
+    version = 4, // Incrementar versão para corrigir grupos
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
