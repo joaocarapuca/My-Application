@@ -55,5 +55,13 @@ fun AppNavHosts(navController: NavHostController) {
                 }
             )
         }
+        
+        // Rota para professores - mesma interface que estudantes mas com acesso completo
+        composable("teacher") {
+            HomePage(
+                navController = navController,
+                authViewModel = authViewModel
+            )
+        }
     }
 }

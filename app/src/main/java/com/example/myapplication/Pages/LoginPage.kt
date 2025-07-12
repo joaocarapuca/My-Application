@@ -24,7 +24,7 @@ fun LoginPage(
     onLoginSuccess: (isAdmin: Boolean) -> Unit,
     authViewModel: AuthViewModel = viewModel()
 ) {
-    var utilizador by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
     
     // Observar estados do ViewModel
@@ -72,11 +72,12 @@ fun LoginPage(
         Spacer(modifier = Modifier.height(24.dp))
 
         OutlinedTextField(
-            value = utilizador,
-            onValueChange = { utilizador = it },
-            label = { Text("Usuário") },
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
+            placeholder = { Text("exemplo@ipbeja.pt") }
         )
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -93,11 +94,11 @@ fun LoginPage(
 
         Button(
             onClick = {
-                if (utilizador.isBlank() || senha.isBlank()) {
+                if (email.isBlank() || senha.isBlank()) {
                     // Mensagem será gerida pelo ViewModel
                 } else {
                     authViewModel.clearError()
-                    authViewModel.login(utilizador, senha)
+                    authViewModel.login(email, senha)
                 }
             },
             enabled = !isLoading, // Desativar durante loading

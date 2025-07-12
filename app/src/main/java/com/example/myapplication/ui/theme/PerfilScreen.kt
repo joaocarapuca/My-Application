@@ -33,9 +33,8 @@ fun MyApp() {
 
 @Composable
 fun PerfilScreen(
-    nome: String = "",
-    email: String = "",
-    curso: String = "Tecnologia Web e Dispositivos Móveis",
+    nome: String = "", // Parâmetro mantido para compatibilidade
+    email: String = "", // Parâmetro mantido para compatibilidade
     onLogout: () -> Unit,
     onThemeChange: (Boolean) -> Unit,
     isDarkTheme: Boolean,
@@ -50,9 +49,11 @@ fun PerfilScreen(
     val colorScheme = MaterialTheme.colorScheme
     val currentUser by authViewModel.currentUser.collectAsState()
 
-    // Usar dados do usuário logado
-    val displayName = currentUser?.name ?: nome
-    val displayEmail = currentUser?.email ?: email
+    // Usar sempre dados do usuário logado
+    val displayName = currentUser?.name ?: "Utilizador"
+    val displayEmail = currentUser?.email ?: "email@ipbeja.pt"
+    val userType = if (currentUser?.isAdmin == true) "Professor/Administrador" else "Estudante"
+    val curso = "Tecnologia Web e Dispositivos Móveis"
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -96,25 +97,69 @@ fun PerfilScreen(
                 fontSize = 16.sp,
                 color = colorScheme.onBackground.copy(alpha = 0.6f)
             )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = userType,
+                fontSize = 16.sp,
+                color = if (currentUser?.isAdmin == true) colorScheme.primary else colorScheme.onBackground.copy(alpha = 0.6f),
+                fontWeight = if (currentUser?.isAdmin == true) FontWeight.Medium else FontWeight.Normal
+            )
             Text(
                 text = curso,
-                fontSize = 16.sp,
-                color = colorScheme.onBackground.copy(alpha = 0.6f)
+                fontSize = 14.sp,
+                color = colorScheme.onBackground.copy(alpha = 0.5f)
             )
 
-            if (currentUser?.isAdmin == true) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = colorScheme.primaryContainer
-                    )
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            // Card com informações do utilizador
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = colorScheme.primaryContainer.copy(alpha = 0.3f)
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
-                        text = "👨‍🏫 Professor/Administrador",
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                        color = colorScheme.onPrimaryContainer,
-                        fontWeight = FontWeight.Medium
+                        text = "📋 Informações do Perfil",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = colorScheme.primary
                     )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    Row {
+                        Text("Nome: ", fontWeight = FontWeight.Medium, color = colorScheme.onBackground)
+                        Text(displayName, color = colorScheme.onBackground)
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    
+                    Row {
+                        Text("Email: ", fontWeight = FontWeight.Medium, color = colorScheme.onBackground)
+                        Text(displayEmail, color = colorScheme.onBackground)
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    
+                    Row {
+                        Text("Tipo: ", fontWeight = FontWeight.Medium, color = colorScheme.onBackground)
+                        Text(
+                            text = userType,
+                            color = if (currentUser?.isAdmin == true) colorScheme.primary else colorScheme.onBackground,
+                            fontWeight = if (currentUser?.isAdmin == true) FontWeight.Medium else FontWeight.Normal
+                        )
+                    }
+                    
+                    if (currentUser?.isAdmin == true) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "🔑 Acesso administrativo ativo",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = colorScheme.primary,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
                 }
             }
 

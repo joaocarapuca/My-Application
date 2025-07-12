@@ -34,6 +34,7 @@ fun HomePage(
 ) {
     val bottomNavController = rememberNavController()
     val currentUser by authViewModel.currentUser.collectAsState()
+    val isTeacher = currentUser?.isAdmin == true
 
     val items = listOf(
         BottomNavItem("Home", Icons.Default.Home, Routes.HOME_SCREEN),
@@ -79,7 +80,7 @@ fun HomePage(
                 }
                 composable(Routes.MENSAGENS) {
                     MensagensScreen(
-                        username = currentUser?.name ?: "Usuário",
+                        username = currentUser?.name ?: "Utilizador",
                         navController = bottomNavController
                     )
                 }
@@ -88,8 +89,6 @@ fun HomePage(
                 }
                 composable(Routes.PERFIL) {
                     PerfilScreen(
-                        nome = currentUser?.name ?: "",
-                        email = currentUser?.email ?: "",
                         onLogout = {
                             authViewModel.logout()
                             navController.navigate(Routes.LOGIN) {

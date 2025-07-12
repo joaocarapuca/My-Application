@@ -89,6 +89,7 @@ fun MensagensScreen(
     // Estados para usuários
     var teachers by remember { mutableStateOf<List<User>>(emptyList()) }
     var students by remember { mutableStateOf<List<User>>(emptyList()) }
+    var allUsers by remember { mutableStateOf<List<User>>(emptyList()) }
     
     // Repositório de mensagens
     var messageRepository by remember { mutableStateOf<MessageRepository?>(null) }
@@ -117,6 +118,21 @@ fun MensagensScreen(
     }
     
     // Carregar usuários
+    LaunchedEffect(Unit) {
+        scope.launch {
+            val database = AppDatabase.getDatabase(context)
+            val userRepository = UserRepository(database)
+            
+            // Carregar todos os usuários
+            userRepository.getAllUsers().collect { userList ->
+                allUsers = userList
+                teachers = userList.filter { it.isAdmin }
+                students = userList.filter { !it.isAdmin }
+            }
+        }
+    }
+    
+    // Carregar usuários separadamente também (manter compatibilidade)
     LaunchedEffect(Unit) {
         scope.launch {
             val database = AppDatabase.getDatabase(context)
@@ -269,9 +285,14 @@ fun MensagensScreen(
                 else -> {
                     when (tabIndex) {
                         0 -> {
-                            // Todos os utilizadores (exceto o próprio)
-                            val allUsers = teachers + students
-                            val usersToShow = allUsers.filter { it.id != currentUser?.id }
+                            // Mostrar utilizadores baseado no tipo de usuário logado
+                            val usersToShow = if (isTeacher) {
+                                // Professores veem todos (estudantes e outros professores)
+                                allUsers.filter { it.id != currentUser?.id }
+                            } else {
+                                // Estudantes veem todos (professores e outros estudantes)
+                                allUsers.filter { it.id != currentUser?.id }
+                            }
                             
                             LazyColumn(Modifier.padding(12.dp)) {
                                 items(usersToShow) { user ->
@@ -283,6 +304,21 @@ fun MensagensScreen(
                                     )
                                     ChatUserItem(user = chatUser) { chatSelecionado = chatUser }
                                 }
+                                
+                                if (usersToShow.isEmpty()) {
+                                    item {
+                                        Box(
+                                            modifier = Modifier.fillMaxWidth().padding(32.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = "Nenhum utilizador disponível",
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                color = Color.Gray
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
 
@@ -293,6 +329,35 @@ fun MensagensScreen(
                                     GroupItem(group = group) { 
                                         grupoSelecionado = it
                                         groupViewModel.setCurrentGroup(it)
+                                    }
+                                }
+                                
+                                if (userGroups.isEmpty()) {
+                                    item {
+                                        Box(
+                                            modifier = Modifier.fillMaxWidth().padding(32.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Column(
+                                                horizontalAlignment = Alignment.CenterHorizontally
+                                            ) {
+                                                Text(
+                                                    text = "📚",
+                                                    fontSize = 48.sp
+                                                )
+                                                Spacer(modifier = Modifier.height(16.dp))
+                                                Text(
+                                                    text = "Nenhum grupo",
+                                                    style = MaterialTheme.typography.titleMedium,
+                                                    color = Color.Gray
+                                                )
+                                                Text(
+                                                    text = "Aguarde ser adicionado a um grupo",
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    color = Color.Gray
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }
