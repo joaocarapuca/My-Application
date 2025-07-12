@@ -11,8 +11,18 @@ import kotlinx.coroutines.launch
  * Base de dados principal da aplicação
  */
 @Database(
-    entities = [User::class, Message::class, Post::class, Like::class, Schedule::class, Alert::class, Group::class, GroupMember::class, GroupMessage::class],
-    version = 4, // Incrementar versão para corrigir grupos
+    entities = [
+        User::class, 
+        Message::class, 
+        Post::class, 
+        Like::class, 
+        Schedule::class, 
+        Alert::class, 
+        Group::class, 
+        GroupMember::class, 
+        GroupMessage::class
+    ],
+    version = 5,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -40,7 +50,7 @@ abstract class AppDatabase : RoomDatabase() {
                     "app_database"
                 )
                 .addCallback(DatabaseCallback())
-                .fallbackToDestructiveMigration() // Para desenvolvimento - remove em produção
+                .fallbackToDestructiveMigration()
                 .build()
                 INSTANCE = instance
                 instance
@@ -67,13 +77,23 @@ abstract class AppDatabase : RoomDatabase() {
         private suspend fun populateDatabase(database: AppDatabase) {
             val userDao = database.userDao()
             val scheduleDao = database.scheduleDao()
+            val groupDao = database.groupDao()
+            val groupMemberDao = database.groupMemberDao()
             
             // Criar utilizador administrador
             userDao.insertUser(
-                User(name = "Administrador", email = "admin", password = "1234", isAdmin = true)
+                User(name = "Administrador Geral", email = "admin@ipbeja.pt", password = "1234", isAdmin = true)
             )
             
-            // Criar utilizadores de teste
+            // Criar professores
+            userDao.insertUser(
+                User(name = "Professor António", email = "antonio@ipbeja.pt", password = "1234", isAdmin = true)
+            )
+            userDao.insertUser(
+                User(name = "Professora Ana", email = "ana@ipbeja.pt", password = "1234", isAdmin = true)
+            )
+            
+            // Criar estudantes
             userDao.insertUser(
                 User(name = "João Carapuça", email = "joao@ipbeja.pt", password = "1234", isAdmin = false)
             )
@@ -82,9 +102,6 @@ abstract class AppDatabase : RoomDatabase() {
             )
             userDao.insertUser(
                 User(name = "Laura Remechido", email = "laura@ipbeja.pt", password = "1234", isAdmin = false)
-            )
-            userDao.insertUser(
-                User(name = "Professor António", email = "professor@ipbeja.pt", password = "1234", isAdmin = true)
             )
             
             // Criar horários de exemplo
@@ -99,9 +116,6 @@ abstract class AppDatabase : RoomDatabase() {
             )
             
             // Criar grupos de exemplo
-            val groupDao = database.groupDao()
-            val groupMemberDao = database.groupMemberDao()
-            
             val siGroupId = groupDao.insertGroup(
                 Group(name = "SI", description = "Sistemas de Informação", createdBy = 1)
             )
@@ -113,10 +127,10 @@ abstract class AppDatabase : RoomDatabase() {
             )
             
             // Adicionar utilizadores aos grupos
+            groupMemberDao.insertGroupMember(GroupMember(groupId = siGroupId.toInt(), userId = 4))
+            groupMemberDao.insertGroupMember(GroupMember(groupId = twGroupId.toInt(), userId = 5))
+            groupMemberDao.insertGroupMember(GroupMember(groupId = designGroupId.toInt(), userId = 6))
             groupMemberDao.insertGroupMember(GroupMember(groupId = siGroupId.toInt(), userId = 2))
-            groupMemberDao.insertGroupMember(GroupMember(groupId = twGroupId.toInt(), userId = 3))
-            groupMemberDao.insertGroupMember(GroupMember(groupId = designGroupId.toInt(), userId = 4))
-            groupMemberDao.insertGroupMember(GroupMember(groupId = siGroupId.toInt(), userId = 5))
         }
     }
 }

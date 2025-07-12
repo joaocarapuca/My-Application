@@ -33,3 +33,17 @@ data class GroupMessage(
     val timestamp: Long = System.currentTimeMillis(),
     val isRead: Boolean = false
 )
+
+/**
+ * Classe para mensagens com informação do remetente
+ */
+data class GroupMessageWithSender(
+    val id: Int,
+    val groupId: Int,
+    val senderId: Int,
+    val content: String,
+    val timestamp: Long,
+    val isRead: Boolean,
+    val senderName: String,
+    val senderEmail: String
+)
