@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.ui.theme
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -79,7 +79,7 @@ fun HomePage(
                     HomeScreen()
                 }
                 composable(Routes.MENSAGENS) {
-                    MensagensScreen(
+                    com.example.myapplication.ui.theme.MensagensScreen(
                         username = currentUser?.name ?: "Utilizador",
                         navController = bottomNavController
                     )

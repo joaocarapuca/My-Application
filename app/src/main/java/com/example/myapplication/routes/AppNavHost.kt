@@ -5,7 +5,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.myapplication.HomePage
+import com.example.myapplication.ui.theme.HomePage
 import com.example.myapplication.Pages.AdminScreen
 import com.example.myapplication.Pages.LoginPage
 import com.example.myapplication.routes.Routes
@@ -24,7 +24,7 @@ fun AppNavHosts(navController: NavHostController) {
             LoginPage(
                 onLoginSuccess = { isAdmin ->
                     if (isAdmin) {
-                        navController.navigate("admin") {
+                        navController.navigate(Routes.ADMIN_SCREEN) {
                             popUpTo(Routes.LOGIN) { inclusive = true }
                         }
                     } else {
@@ -44,13 +44,13 @@ fun AppNavHosts(navController: NavHostController) {
             )
         }
 
-        composable("admin") {
+        composable(Routes.ADMIN_SCREEN) {
             AdminScreen(
                 navController = navController,
                 onLogout = {
                     authViewModel.logout()
                     navController.navigate(Routes.LOGIN) {
-                        popUpTo("admin") { inclusive = true }
+                        popUpTo(Routes.ADMIN_SCREEN) { inclusive = true }
                     }
                 }
             )

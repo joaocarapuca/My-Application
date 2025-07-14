@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.ui.theme
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -304,7 +304,7 @@ fun PerfilScreen(
                         text = "🏫 Instituto Politécnico de Beja",
                         fontSize = 14.sp,
                         color = colorScheme.onBackground.copy(alpha = 0.8f)
-                            navController.navigate("login") {
+                    )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "© 2024 - Todos os direitos reservados",

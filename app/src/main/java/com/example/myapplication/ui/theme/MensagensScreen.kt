@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.ui.theme
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -10,21 +10,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -131,18 +117,6 @@ fun MensagensScreen(
         }
     }
     
-    // Carregar usuários separadamente também (manter compatibilidade)
-    LaunchedEffect(Unit) {
-        scope.launch {
-            val database = AppDatabase.getDatabase(context)
-            val userRepository = UserRepository(database)
-            
-            userRepository.getTeachers().collect { teacherList ->
-                teachers = teacherList
-            }
-        }
-    }
-    
     // Carregar grupos do usuário
     LaunchedEffect(currentUser) {
         currentUser?.let { user ->
@@ -163,17 +137,6 @@ fun MensagensScreen(
     LaunchedEffect(grupoSelecionado) {
         grupoSelecionado?.let { group ->
             groupViewModel.loadGroupMessages(group.id)
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        scope.launch {
-            val database = AppDatabase.getDatabase(context)
-            val userRepository = UserRepository(database)
-            
-            userRepository.getStudents().collect { studentList ->
-                students = studentList
-            }
         }
     }
 
