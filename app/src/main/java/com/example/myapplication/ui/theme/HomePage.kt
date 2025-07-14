@@ -19,7 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.myapplication.navigation.Routes
+import com.example.myapplication.routes.Routes
 import com.example.myapplication.ui.screens.HorarioScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.viewmodel.AuthViewModel

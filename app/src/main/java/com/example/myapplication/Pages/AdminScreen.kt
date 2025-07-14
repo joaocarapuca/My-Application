@@ -23,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.myapplication.database.User
 import com.example.myapplication.database.Schedule
+import com.example.myapplication.database.Group
 import com.example.myapplication.viewmodel.AdminViewModel
 import com.example.myapplication.viewmodel.PostViewModel
 import com.example.myapplication.viewmodel.ScheduleViewModel

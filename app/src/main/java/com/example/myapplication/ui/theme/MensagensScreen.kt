@@ -8,12 +8,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,14 +22,15 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -217,7 +216,12 @@ fun MensagensScreen(
                         Icon(Icons.Default.AccountCircle, contentDescription = null, tint = Color.White)
                     }
                 },
-                modifier = Modifier.background(COLOR_PRIMARY)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = COLOR_PRIMARY,
+                    titleContentColor = Color.White,
+                    navigationIconContentColor = Color.White,
+                    actionIconContentColor = Color.White
+                )
             )
         },
     ) { padding ->
@@ -368,6 +372,189 @@ fun MensagensScreen(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun PrivateChatConversation(
+    messages: List<com.example.myapplication.database.Message>,
+    currentUserId: Int,
+    inputText: String,
+    onInputChange: (String) -> Unit,
+    onSendMessage: () -> Unit
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.weight(1f).padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(messages.size) { index ->
+                val message = messages[index]
+                MessageBubble(
+                    content = message.content,
+                    isFromMe = message.senderId == currentUserId,
+                    timestamp = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(message.timestamp))
+                )
+            }
+        }
+        
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            OutlinedTextField(
+                value = inputText,
+                onValueChange = onInputChange,
+                modifier = Modifier.weight(1f),
+                placeholder = { Text("Escreva uma mensagem...") }
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Button(
+                onClick = onSendMessage,
+                colors = ButtonDefaults.buttonColors(containerColor = COLOR_PRIMARY)
+            ) {
+                Icon(Icons.Default.Send, contentDescription = "Enviar", tint = Color.White)
+            }
+        }
+    }
+}
+
+@Composable
+fun GroupChatConversation(
+    messages: List<GroupMessageWithSender>,
+    currentUserId: Int,
+    inputText: String,
+    onInputChange: (String) -> Unit,
+    onSendMessage: () -> Unit
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.weight(1f).padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(messages.size) { index ->
+                val message = messages[index]
+                GroupMessageBubble(
+                    content = message.content,
+                    senderName = message.senderName,
+                    isFromMe = message.senderId == currentUserId,
+                    timestamp = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(message.timestamp))
+                )
+            }
+        }
+        
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            OutlinedTextField(
+                value = inputText,
+                onValueChange = onInputChange,
+                modifier = Modifier.weight(1f),
+                placeholder = { Text("Escreva uma mensagem...") }
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Button(
+                onClick = onSendMessage,
+                colors = ButtonDefaults.buttonColors(containerColor = COLOR_PRIMARY)
+            ) {
+                Icon(Icons.Default.Send, contentDescription = "Enviar", tint = Color.White)
+            }
+        }
+    }
+}
+
+@Composable
+fun MessageBubble(
+    content: String,
+    isFromMe: Boolean,
+    timestamp: String
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = if (isFromMe) Arrangement.End else Arrangement.Start
+    ) {
+        Card(
+            modifier = Modifier.widthIn(max = 280.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = if (isFromMe) COLOR_MSG_ME else COLOR_MSG_OTHER
+            ),
+            shape = RoundedCornerShape(
+                topStart = 16.dp,
+                topEnd = 16.dp,
+                bottomStart = if (isFromMe) 16.dp else 4.dp,
+                bottomEnd = if (isFromMe) 4.dp else 16.dp
+            )
+        ) {
+            Column(
+                modifier = Modifier.padding(12.dp)
+            ) {
+                Text(
+                    text = content,
+                    color = COLOR_TEXT_PRIMARY
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = timestamp,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun GroupMessageBubble(
+    content: String,
+    senderName: String,
+    isFromMe: Boolean,
+    timestamp: String
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = if (isFromMe) Arrangement.End else Arrangement.Start
+    ) {
+        Card(
+            modifier = Modifier.widthIn(max = 280.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = if (isFromMe) COLOR_MSG_ME else COLOR_MSG_OTHER
+            ),
+            shape = RoundedCornerShape(
+                topStart = 16.dp,
+                topEnd = 16.dp,
+                bottomStart = if (isFromMe) 16.dp else 4.dp,
+                bottomEnd = if (isFromMe) 4.dp else 16.dp
+            )
+        ) {
+            Column(
+                modifier = Modifier.padding(12.dp)
+            ) {
+                if (!isFromMe) {
+                    Text(
+                        text = senderName,
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold,
+                        color = COLOR_PRIMARY
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                }
+                Text(
+                    text = content,
+                    color = COLOR_TEXT_PRIMARY
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = timestamp,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
             }
         }
     }

@@ -8,7 +8,7 @@ import androidx.navigation.compose.composable
 import com.example.myapplication.HomePage
 import com.example.myapplication.Pages.AdminScreen
 import com.example.myapplication.Pages.LoginPage
-import com.example.myapplication.navigation.Routes
+import com.example.myapplication.routes.Routes
 import com.example.myapplication.viewmodel.AuthViewModel
 
 @Composable

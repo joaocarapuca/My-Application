@@ -1,4 +1,4 @@
-package com.example.myapplication.navigation
+package com.example.myapplication.routes
 
 object Routes {
     const val LOGIN = "login"
@@ -6,4 +6,5 @@ object Routes {
     const val MENSAGENS = "mensagens"
     const val PERFIL = "perfil"
     const val HORARIO = "horario"
+    const val ADMIN_SCREEN = "admin"
 }
